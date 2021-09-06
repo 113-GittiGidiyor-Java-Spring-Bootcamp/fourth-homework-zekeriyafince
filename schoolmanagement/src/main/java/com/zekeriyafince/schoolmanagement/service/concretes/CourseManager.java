@@ -1,5 +1,7 @@
 package com.zekeriyafince.schoolmanagement.service.concretes;
 
+import com.zekeriyafince.schoolmanagement.core.utilities.exceptions.CourseException;
+import com.zekeriyafince.schoolmanagement.core.utilities.exceptions.ErrorCodes;
 import com.zekeriyafince.schoolmanagement.dto.CourseCreateDto;
 import com.zekeriyafince.schoolmanagement.dto.CourseUpdateDto;
 import com.zekeriyafince.schoolmanagement.dto.CourseViewDto;
@@ -38,6 +40,9 @@ public class CourseManager implements CourseService {
 
     @Override
     public CourseViewDto createCourse(CourseCreateDto courseCreateDto) {
+        if(this.courseRepository.existsByCourseCode(courseCreateDto.getCourseCode())) {
+            throw new CourseException(ErrorCodes.CourseIsAlreadyExistException,"Sistemde aynı koda sahip kurs bulunamaz.");
+        }
         final Course course = this.courseRepository.save(new Course(courseCreateDto.getName(), courseCreateDto.getCourseCode(), courseCreateDto.getCredit(), courseCreateDto.getStudents(), courseCreateDto.getInstructor()));
         return CourseViewDto.of(course);
     }
